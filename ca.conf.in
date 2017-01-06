@@ -1,0 +1,20 @@
+[ req ]
+x509_extensions = v3_ca
+distinguished_name = req_distinguished_name
+prompt = no
+[ req_distinguished_name ]
+CN=COMMON_NAME ROOT
+[ v3_ca ]
+subjectKeyIdentifier=hash
+basicConstraints=critical,CA:true,pathlen:1
+keyUsage=critical,keyCertSign,cRLSign
+nameConstraints=critical,@nc
+[ nc ]
+permitted;otherName=1.3.6.1.5.5.7.8.7;IA5:URL
+permitted;email.0=URL
+permitted;email.1=.URL
+permitted;DNS=URL
+permitted;URI.0=URL
+permitted;URI.1=.URL
+permitted;IP.0=0.0.0.0/255.255.255.255
+permitted;IP.1=::/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
