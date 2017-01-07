@@ -54,6 +54,7 @@ yubico-piv-tool -a read-cert -s 9c > work/yk-ca.crt
 openssl x509 -in $DIR/yk-ca.crt -serial -noout | sed -e "s/serial=//g" > $DIR/yk-ca.srl
 
 echo "Signing certificate"
+echo "Press yubikey button when light on device flashes"
 echo "$OPENSSL_ENGINE
     x509 -engine pkcs11 -CAkeyform engine -CAkey slot_0-id_2 -$HASH -CA $DIR/yk-ca.crt -req \
     -passin pass:$PIN -in $DIR/$NAME.csr -out $DIR/$NAME.crt

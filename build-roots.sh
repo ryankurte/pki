@@ -57,7 +57,7 @@ echo "Insert first yubikey"
 read -p "Push enter to continue"
 
 echo "Loading first key onto device"
-yubico-piv-tool -s ${SLOT} -a import-key -i $DIR/ca1.key
+yubico-piv-tool -s ${SLOT} -a import-key -i $DIR/ca1.key --touch-policy=always
 
 echo "Loading first cross signed certificate onto device"
 yubico-piv-tool -s ${SLOT} -a import-certificate -i $DIR/ca1-cross.crt
@@ -69,7 +69,7 @@ echo "Insert second yubikey"
 read -p "Push enter to continue"
 
 echo "Loading second key onto device"
-yubico-piv-tool -s ${SLOT} -a import-key -i $DIR/ca2.key
+yubico-piv-tool -s ${SLOT} -a import-key -i $DIR/ca2.key --touch-policy=always
 
 echo "Loading second cross signed certificate onto device"
 yubico-piv-tool -s ${SLOT} -a import-certificate -i $DIR/ca2-cross.crt
