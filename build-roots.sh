@@ -41,6 +41,10 @@ echo "Cross signing CA roots"
 openssl x509 -req -days 36500 -in $DIR/ca1.csr -out $DIR/ca1-cross.crt -CA $DIR/ca2.crt -CAkey $DIR/ca2.key
 openssl x509 -req -days 36500 -in $DIR/ca2.csr -out $DIR/ca2-cross.crt -CA $DIR/ca1.crt -CAkey $DIR/ca1.key
 
+echo "Packaging CAs"
+cat $DIR/ca1.crt > $DIR/roots.crt
+cat $DIR/ca2.crt >> $DIR/roots.crt
+
 echo "Insert first yubikey"
 read -p "Push enter to continue"
 
