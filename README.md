@@ -16,3 +16,9 @@ This requires a pair of Yubikey devices to store root certificates and keys on.
 - Yubico PIV tool
 - engine_pks11.so
 
+## TODO
+
+1. Move key generation and operations to yubikey, should be possible but may require libssl calls
+2. Add build-int feature to build intermediate ca on another yubikey (instead of locally)
+3. Add build-int feature to sign a provided certificate so keys don't have to leave the intermediate device
+

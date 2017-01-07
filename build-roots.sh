@@ -5,20 +5,28 @@
 # - https://developers.yubico.com/PIV/Guides/Certificate_authority.html
 # - https://github.com/OpenSC/OpenSC/wiki/SmartCardHSM
 
-# Company Name ie. Foo NZ Ltd.
-CA_CN="foo ltd."
-# Organisational Unit ie. Research and Development
-CA_OU="R&D"
-# Organisation name ie. foo.nz
-CA_ORG="foobar.com"
 
 KEYLEN=2048 # Key length
 SLOT=9c     # Yubikey Certification slot
 DIR=work
 
-CONFIG="\'/CN=${CA_CN}/OU=${CA_OU}/O=${CA_ORG}/\'"
+# Check inputs
+if [ "$#" -ne 3 ]; then 
+    echo "Usage: $0 CN OU ORG"
+    echo "CN - Common Name for CA (ie. Foo Bar NZ Ltd.)"
+    echo "OU - Organisational Unit for CA (ie. research)"
+    echo "ORG - organisation url (ie foo.nz)"
+    exit
+fi
 
+CA_CN=$1
+CA_OU=$2
+CA_ORG=$3
+
+# Fail on errors
 set -e
+
+echo "Generating CA for: $CA_CN OU: $CA_OU URL:$CA_ORG"
 
 echo "Generating CA config files"
 sed "s/URL/${CA_ORG}/g;s/COMMON_NAME/${CA_CN}/g;s/ROOT/ROOT A/g" ca.conf.in > $DIR/ca1.conf
