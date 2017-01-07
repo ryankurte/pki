@@ -1,13 +1,10 @@
 #!/bin/bash
-# A script to bootstrap PKI using a pair of Yubikeys
-# Resources:
-# - https://developers.yubico.com/yubico-piv-tool/
-# - https://developers.yubico.com/PIV/Guides/Certificate_authority.html
-# - https://github.com/OpenSC/OpenSC/wiki/SmartCardHSM
+# Generates a cross signed root CA and stores the generated CA files on yubikeys
 
 
 KEYLEN=2048 # Key length
 SLOT=9c     # Yubikey Certification slot
+PIN=123456  # Yubikey pin
 DIR=work
 
 # Check inputs
@@ -19,6 +16,7 @@ if [ "$#" -ne 3 ]; then
     exit
 fi
 
+# Copy to working vars
 CA_CN=$1
 CA_OU=$2
 CA_ORG=$3
@@ -27,13 +25,13 @@ CA_ORG=$3
 set -e
 
 echo "Generating CA for: $CA_CN OU: $CA_OU URL:$CA_ORG"
+mkdir -p $DIR
 
 echo "Generating CA config files"
 sed "s/URL/${CA_ORG}/g;s/COMMON_NAME/${CA_CN}/g;s/ROOT/ROOT A/g" ca.conf.in > $DIR/ca1.conf
 sed "s/URL/${CA_ORG}/g;s/COMMON_NAME/${CA_CN}/g;s/ROOT/ROOT B/g" ca.conf.in > $DIR/ca2.conf
 
 echo "Generating Keys"
-# TODO: generate keys on device, should be able to sign then swap certs without changing keys
 openssl genrsa -out $DIR/ca1.key ${KEYLEN}
 openssl genrsa -out $DIR/ca2.key ${KEYLEN}
 
@@ -46,8 +44,8 @@ openssl req -new -out $DIR/ca1.csr -key $DIR/ca1.key -config $DIR/ca1.conf
 openssl req -new -out $DIR/ca2.csr -key $DIR/ca2.key -config $DIR/ca2.conf
 
 echo "Cross signing CA roots"
-openssl x509 -req -days 36500 -in $DIR/ca1.csr -out $DIR/ca1-cross.crt -CA $DIR/ca2.crt -CAkey $DIR/ca2.key
-openssl x509 -req -days 36500 -in $DIR/ca2.csr -out $DIR/ca2-cross.crt -CA $DIR/ca1.crt -CAkey $DIR/ca1.key
+openssl x509 -req -days 36500 -in $DIR/ca1.csr -out $DIR/ca1-cross.crt -CA $DIR/ca2.crt -CAkey $DIR/ca2.key -CAcreateserial
+openssl x509 -req -days 36500 -in $DIR/ca2.csr -out $DIR/ca2-cross.crt -CA $DIR/ca1.crt -CAkey $DIR/ca1.key -CAcreateserial
 
 echo "Packaging CAs"
 cat $DIR/ca1.crt > $DIR/roots.crt
