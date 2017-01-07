@@ -13,8 +13,14 @@ openssl verify -verbose -CAfile $DIR/ca2.crt $DIR/ca1-cross.crt
 openssl verify -verbose -CAfile $DIR/ca1.crt $DIR/ca2-cross.crt
 
 echo "Checking intermediate generation"
-./build-int.sh "test"
+./build-int.sh "yubikey" "test"
 openssl verify -verbose -CAfile $DIR/roots.crt $DIR/test.crt
 
-echo "Checking intermediate revocation"
+echo "Checking client generation"
+#TODO:
 
+echo "Checking intermediate revocation"
+#TODO:
+
+echo "Checking client revocation"
+#TODO:

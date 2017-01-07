@@ -10,6 +10,7 @@ Bootstrapping working on OSX, needs cross platform support, some features and a 
 
 
 ## Process
+First a root CA (self then cross signed) is build and loaded onto a pair of yubikeys. These roots can then be used to create (sign/revoke) intermediate certificates for use in infrastructure or on the production line. The intermediate certificates can finally be used to generate client certificates to be validated against the (self signed) root CAs.
 
 ### Building the root CA
 

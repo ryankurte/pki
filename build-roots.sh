@@ -30,6 +30,8 @@ mkdir -p $DIR
 echo "Generating CA config files"
 sed "s/URL/${CA_ORG}/g;s/COMMON_NAME/${CA_CN}/g;s/ROOT/ROOT A/g" ca.conf.in > $DIR/ca1.conf
 sed "s/URL/${CA_ORG}/g;s/COMMON_NAME/${CA_CN}/g;s/ROOT/ROOT B/g" ca.conf.in > $DIR/ca2.conf
+sed "s/URL/${CA_ORG}/g;s/COMMON_NAME/${CA_CN}/g;s/ROOT/CROSS ROOT A/g" ca.conf.in > $DIR/ca1-cross.conf
+sed "s/URL/${CA_ORG}/g;s/COMMON_NAME/${CA_CN}/g;s/ROOT/CROSS ROOT B/g" ca.conf.in > $DIR/ca2-cross.conf
 
 echo "Generating Keys"
 openssl genrsa -out $DIR/ca1.key ${KEYLEN}
@@ -40,8 +42,8 @@ openssl req -x509 -new -nodes -key $DIR/ca1.key -sha256 -days 36500 -out $DIR/ca
 openssl req -x509 -new -nodes -key $DIR/ca2.key -sha256 -days 36500 -out $DIR/ca2.crt -config $DIR/ca2.conf
 
 echo "Generate cross signing CSRs"
-openssl req -new -out $DIR/ca1.csr -key $DIR/ca1.key -config $DIR/ca1.conf
-openssl req -new -out $DIR/ca2.csr -key $DIR/ca2.key -config $DIR/ca2.conf
+openssl req -new -out $DIR/ca1.csr -key $DIR/ca1.key -config $DIR/ca1-cross.conf
+openssl req -new -out $DIR/ca2.csr -key $DIR/ca2.key -config $DIR/ca2-cross.conf
 
 echo "Cross signing CA roots"
 openssl x509 -req -days 36500 -in $DIR/ca1.csr -out $DIR/ca1-cross.crt -CA $DIR/ca2.crt -CAkey $DIR/ca2.key -CAcreateserial
