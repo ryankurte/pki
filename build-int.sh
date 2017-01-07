@@ -10,6 +10,7 @@ HASH=sha256
 # Output directory
 DIR=work
 
+# OpenSSL constants
 OPENSSL_BIN=/usr/local/opt/openssl/bin/openssl
 OPENSSL_ENGINE="engine dynamic -pre SO_PATH:/usr/local/lib/engines/engine_pkcs11.so -pre ID:pkcs11 \
     -pre LIST_ADD:1 -pre LOAD -pre MODULE_PATH:/usr/local/lib/opensc-pkcs11.so"

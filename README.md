@@ -6,7 +6,7 @@ This requires a pair of Yubikey devices to store root certificates and keys, as 
 
 
 ## Status
-Bootstrapping working, needs additional features and a security review.
+Bootstrapping working on OSX, needs cross platform support, some features and a security review.
 
 ## Process
 
@@ -41,6 +41,8 @@ Output files will all be written to the `work/` directory.
 - Yubico PIV tool
 - engine_pks11.so
 
+OSX: install with `brew install openssl engine_pkcs11 opensc yubico-piv-tool`.
+
 ## TODO
 
 1. Move key generation and operations to yubikey, should be possible but may require libssl calls for self signed roots
@@ -49,6 +51,7 @@ Output files will all be written to the `work/` directory.
 4. Could remove keys once generated
 5. Support eliptic curve as well as RSA certificates
 6. Optionally set management keys and prompt for pin/puk change
+7. Discover paths or platform so this works on OSX or Linux
 
 ## Resources
 
