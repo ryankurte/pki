@@ -1,16 +1,28 @@
 # Bootstraping PKI with Yubikeys
 
-Helper scripts to bootstrap an internal CA using cross signed roots on two Yubikey devices, because everybody needs a little bit of PKI.
+Helper scripts to bootstrap an internal Certificate Authority using cross signed roots on two Yubikey devices, because everybody needs a little bit of PKI, and we can definitely make it cheaper and easier to achieve.
 
-This requires a pair of Yubikey devices to store root certificates and keys, as well as an offline machine to generate the root keys and intermediate certificates. In future it may be possible to generate all keys on devices to aleviate this slightly.
+This requires a pair of Yubikey devices to store root certificates and keys, as well as an offline machine to generate the root keys and intermediate certificates. In future it may be possible to generate all keys on devices to aleviate this need for a trusted / airgapped machine.
+
+## Introduction
+
+### What is PKI?
+PKI is Public Key Infrastructure, a method using cryptographic certificates to validate or authenticate services or devices. 
+This works using a trust chain, whereby devices can trust a root Certificate Authority (CA), then any certificates issued by that authority can be validated against that root.
+
+### Why would you need it?
+This is commonly used for HTTPS/TLS on the web, where certificate authorities are distributed as part of your operating system or browser, allowing transparent validation and secure connections through the web.
+Sometimes it is useful to have an internal certificate authority, for use between micro-services, or in manufacturing to ensure security with physical devices.
 
 
 ## Status
-Bootstrapping working on OSX, needs cross platform support, some features and a security review.
+Bootstrapping working on OSX, needs cross platform support (mainly pathing issues), some features and a security review.
 
 
 ## Process
-First a root CA (self then cross signed) is build and loaded onto a pair of yubikeys. These roots can then be used to create (sign/revoke) intermediate certificates for use in infrastructure or on the production line. The intermediate certificates can finally be used to generate client certificates to be validated against the (self signed) root CAs.
+First a root CA (self then cross signed) is built and loaded onto a pair of yubikeys. 
+These roots can then be used to create (sign/revoke) intermediate certificates for use in infrastructure or on the production line. 
+The intermediate certificates can finally be used to generate client certificates to be validated against the (self signed) root CAs.
 
 ### Building the root CA
 
@@ -36,12 +48,16 @@ Intermediate certificates can be deployed to infrastructure that needs to be abl
 
 TODO
 
+### Revoking client certificates
+
 
 ## Usage
 
 1. `./build-roots.sh` to build roots and load onto yubikeys
 2. add `work/roots.crt` to your allowed CAs
 3. `./build-int.sh NAME` to build an intermediate CA with the provided name that can be validated against the above roots.
+
+Note that if you intend to use revocation you will need to include a method for distributing revocations.
 
 Output files will all be written to the `work/` directory.
 
