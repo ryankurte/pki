@@ -1,11 +1,11 @@
-# Root certificate configuration
+# Intermediate certificate configuration
 
 [ req ]
 x509_extensions     = v3_ca
 req_extensions      = v3_req
 
 distinguished_name  = req_distinguished_name
-prompt = no
+prompt = yes
 policy = policy_match
 
 # Policy defining requirements for sub certificates
@@ -16,10 +16,15 @@ commonName              = supplied
 emailAddress            = supplied
 
 [ req_distinguished_name ]
-commonName = COMMON_NAME TYPE
-emailAddress = EMAIL
-0.organizationName = COMMON_NAME
-organizationalUnitName = OU
+commonName = Common Name (eg, YOUR name)
+emailAddress = Email Address
+0.organizationName = Organization Name (eg, company)
+organizationalUnitName =  Organizational Unit Name (eg, section)
+
+commonName_default = COMMON_NAME
+emailAddress_default = EMAIL
+0.organizationName_default = COMMON_NAME
+organizationalUnitName_default = OU
 
 [ v3_req ]
 subjectAltName=email:move
@@ -28,15 +33,12 @@ subjectAltName=email:move
 subjectKeyIdentifier=hash
 authorityKeyIdentifier=keyid:always,issuer:always
 
-basicConstraints=critical,CA:true,pathlen:1
-keyUsage=critical,keyCertSign,cRLSign
+basicConstraints=critical,CA:true,pathlen:0
+keyUsage=critical,keyAgreement,digitalSignature,keyCertSign
 nameConstraints=critical,@nc
 
 [ nc ]
 permitted;otherName=1.3.6.1.5.5.7.8.7;IA5:URL
-permitted;email.0=URL
-permitted;email.1=.URL
-permitted;DNS=URL
 permitted;URI.0=URL
 permitted;URI.1=.URL
 permitted;IP.0=0.0.0.0/255.255.255.255

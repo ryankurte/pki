@@ -2,19 +2,8 @@
 # Generates an intermediate CA using the connected yubikey
 # This requires a root certificate yubikey to sign the new intermediate
 
-PIN=123456
-
-KEYLEN=2048
-HASH=sha256
-SLOT=9c
-
-# Output directory
-DIR=work
-
-# OpenSSL constants
-OPENSSL_BIN=/usr/local/opt/openssl/bin/openssl
-OPENSSL_ENGINE="engine dynamic -pre SO_PATH:/usr/local/lib/engines/engine_pkcs11.so -pre ID:pkcs11 \
-    -pre LIST_ADD:1 -pre LOAD -pre MODULE_PATH:/usr/local/lib/opensc-pkcs11.so"
+# Load common components
+. ./common.sh
 
 # Check input count
 if [ "$#" -ne 2 ]; then 
@@ -32,19 +21,22 @@ if [ "$MODE" != "local" ] && [ "$MODE" != "yubikey" ]; then
     exit
 fi
 
-# Exit on error
-set -e
-
-# Create working dir
-mkdir -p work
+# Load vars if vars.sh exists
+if [ -f ./$DIR/vars.sh ]; then
+    echo "Loading vars from: ./$DIR/vars.sh "
+    . ./$DIR/vars.sh
+fi
 
 echo "Generating new intermediate cert: $NAME"
+
+echo "Configuring intermediate cert from ./int.conf.in"
+build_root_config "INTERMEDIATE" ./int.conf.in $DIR/int.conf
 
 echo "Generating intermediate key"
 openssl genrsa -out $DIR/$NAME.key $KEYLEN
 
 echo "Generating intermediate CSR"
-openssl req -new -out $DIR/$NAME.csr -key $DIR/$NAME.key
+openssl req -new -out $DIR/$NAME.csr -sha256 -days 3650 -config $DIR/int.conf -key $DIR/$NAME.key
 
 echo "Insert root yubikey"
 read -p "Push enter to continue"
@@ -79,4 +71,6 @@ if [ "$MODE" = "yubikey" ]; then
 
     echo "Yubikey status:"
     yubico-piv-tool -a status
+
+    rm $DIR/$NAME.key
 fi

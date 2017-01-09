@@ -1,37 +1,36 @@
 #!/bin/bash
 # Generates a cross signed root CA and stores the generated CA files on yubikeys
 
+# Load common components
+. ./common.sh
 
-KEYLEN=2048 # Key length
-SLOT=9c     # Yubikey Certification slot
-PIN=123456  # Yubikey pin
-DIR=work
-
-# Check inputs
-if [ "$#" -ne 3 ]; then 
-    echo "Usage: $0 CN OU ORG"
-    echo "CN - Common Name for CA (ie. Foo Bar NZ Ltd.)"
+# Fetch inputs depending on args
+if [ "$#" -eq 4 ]; then 
+    # Args provided, load directly
+    NAME=$1
+    OU=$2
+    URL=$3
+    EMAIL=$4
+elif [ "$#" -eq 0 ]; then 
+    # No args, ask user
+    get_config
+else
+    # Print help
+    echo "Usage: $0 [CN OU URL EMAIL]"
+    echo "CN - Base Common Name for CA (ie. Foo Bar NZ Ltd.)"
     echo "OU - Organisational Unit for CA (ie. research)"
     echo "ORG - organisation url (ie foo.nz)"
+    echo "EMAIL - certificate management email"
     exit
 fi
 
-# Copy to working vars
-CA_CN=$1
-CA_OU=$2
-CA_ORG=$3
-
-# Fail on errors
-set -e
-
-echo "Generating CA for: $CA_CN OU: $CA_OU URL:$CA_ORG"
-mkdir -p $DIR
+echo "Generating CA for: $NAME URL: $URL EMAIL: $EMAIL COUNTRY: $COUNTRY"
 
 echo "Generating CA config files"
-sed "s/URL/${CA_ORG}/g;s/COMMON_NAME/${CA_CN}/g;s/ROOT/ROOT A/g" ca.conf.in > $DIR/ca1.conf
-sed "s/URL/${CA_ORG}/g;s/COMMON_NAME/${CA_CN}/g;s/ROOT/ROOT B/g" ca.conf.in > $DIR/ca2.conf
-sed "s/URL/${CA_ORG}/g;s/COMMON_NAME/${CA_CN}/g;s/ROOT/CROSS ROOT A/g" ca.conf.in > $DIR/ca1-cross.conf
-sed "s/URL/${CA_ORG}/g;s/COMMON_NAME/${CA_CN}/g;s/ROOT/CROSS ROOT B/g" ca.conf.in > $DIR/ca2-cross.conf
+build_root_config "ROOT A" ca.conf.in $DIR/ca1.conf
+build_root_config "ROOT B" ca.conf.in $DIR/ca2.conf
+build_root_config "CROSS ROOT A" ca.conf.in $DIR/ca1-cross.conf
+build_root_config "CROSS ROOT B" ca.conf.in $DIR/ca2-cross.conf
 
 echo "Generating Keys"
 openssl genrsa -out $DIR/ca1.key ${KEYLEN}
