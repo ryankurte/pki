@@ -31,66 +31,75 @@ echo "be sure to keep track of which yubikey is which"
 echo "IMPORTANT: The yubikey may require physical confirmation for a number of steps"
 echo "watch out for the flashing light on the device"
 
-#echo "Generating CA config files"
-#build_root_config "ROOT A" ca.conf.in $DIR/ca1.conf
-#build_root_config "ROOT B" ca.conf.in $DIR/ca2.conf
-#build_root_config "CROSS ROOT A" ca.conf.in $DIR/ca1-cross.conf
-#build_root_config "CROSS ROOT B" ca.conf.in $DIR/ca2-cross.conf
-#
-#echo "Creating self signed roots"
-#
-#echo "Insert first root yubikey"
-#read -p "Push enter to continue"
-#
-#echo "Generating root key A on device"
-#yubico-piv-tool -s 9c -A RSA2048 -a generate --touch-policy=always
-#
-#echo "Self signing root certificate A"
-#echo "Press yubikey button when light flashes"
-#echo "${OPENSSL_ENGINE}
-#    req -engine pkcs11 -keyform engine -key slot_0-id_2 -$HASH -passin pass:$PIN \
-#    -days 36500 -x509 -new -nodes -out $DIR/ca1.crt -config $DIR/ca1.conf
-#    exit
-#    " | $OPENSSL_BIN
-#openssl x509 -in $DIR/ca1.crt -serial -noout | sed -e "s/serial=//g" > $DIR/ca1.srl
-#
-#echo "Generating CSR for root A cross signing"
-#echo "$OPENSSL_ENGINE
-#    req -engine pkcs11 -keyform engine -key slot_0-id_2 -$HASH -passin pass:$PIN \
-#    -new -config $DIR/ca1-cross.conf -out $DIR/ca1.csr
-#    exit
-#    " | $OPENSSL_BIN
-#
-#echo "Insert second root yubikey"
-#read -p "Push enter to continue"
-#
-#echo "Generating root key B on device"
-#yubico-piv-tool -s 9c -A RSA2048 -a generate --touch-policy=always
-#
-#echo "Self signing root certificate B"
-#echo "Press yubikey button when light flashes"
-#echo "${OPENSSL_ENGINE}
-#    req -engine pkcs11 -keyform engine -key slot_0-id_2 -$HASH -passin pass:$PIN \
-#    -days 36500 -x509 -new -nodes -out $DIR/ca2.crt -config $DIR/ca2.conf
-#    exit
-#    " | $OPENSSL_BIN
-#
-#openssl x509 -in $DIR/ca2.crt -serial -noout | sed -e "s/serial=//g" > $DIR/ca2.srl
-#echo "Generating CSR for root B cross signing"
-#echo "$OPENSSL_ENGINE
-#    req -engine pkcs11 -keyform engine -key slot_0-id_2 -$HASH -passin pass:$PIN \
-#    -new -config $DIR/ca2-cross.conf -out $DIR/ca2.csr
-#    exit
-#    " | $OPENSSL_BIN
+echo "Generating CA config files"
+build_root_config "ROOT A" ca.conf.in $DIR/ca1.conf
+build_root_config "ROOT B" ca.conf.in $DIR/ca2.conf
+build_root_config "CROSS ROOT A" ca.conf.in $DIR/ca1-cross.conf
+build_root_config "CROSS ROOT B" ca.conf.in $DIR/ca2-cross.conf
+
+echo "Creating self signed roots"
+
+echo "Insert first root yubikey"
+read -p "Push enter to continue"
+
+echo "Generating root key A on device"
+yubico-piv-tool -s 9c -A RSA2048 -a generate --touch-policy=always
+
+echo "Self signing root certificate A"
+echo "Press yubikey button when light flashes"
+echo "${OPENSSL_ENGINE}
+    req -engine pkcs11 -keyform engine -key slot_0-id_2 -$HASH -passin pass:$PIN \
+    -days 36500 -x509 -new -nodes -out $DIR/ca1.crt -config $DIR/ca1.conf
+    exit
+    " | $OPENSSL_BIN
+
+echo "Loading root certificate A"
+yubico-piv-tool -s ${SLOT} -a import-certificate -i $DIR/ca2.crt
+openssl x509 -in $DIR/ca1.crt -serial -noout | sed -e "s/serial=//g" > $DIR/ca1.srl
+
+echo "Generating CSR for root A cross signing"
+echo "$OPENSSL_ENGINE
+    req -engine pkcs11 -keyform engine -key slot_0-id_2 -$HASH -passin pass:$PIN \
+    -new -nodes -config $DIR/ca1-cross.conf -out $DIR/ca1.csr
+    exit
+    " | $OPENSSL_BIN
+
+echo "Insert second root yubikey"
+read -p "Push enter to continue"
+
+echo "Generating root key B on device"
+yubico-piv-tool -s 9c -A RSA2048 -a generate --touch-policy=always
+
+echo "Self signing root certificate B"
+echo "Press yubikey button when light flashes"
+echo "${OPENSSL_ENGINE}
+    req -engine pkcs11 -keyform engine -key slot_0-id_2 -$HASH -passin pass:$PIN \
+    -days 36500 -x509 -new -nodes -out $DIR/ca2.crt -config $DIR/ca2.conf
+    exit
+    " | $OPENSSL_BIN
+
+echo "Loading root certificate B"
+yubico-piv-tool -s ${SLOT} -a import-certificate -i $DIR/ca2.crt
+openssl x509 -in $DIR/ca2.crt -serial -noout | sed -e "s/serial=//g" > $DIR/ca2.srl
+
+echo "Generating CSR for root B cross signing"
+echo "$OPENSSL_ENGINE
+    req -engine pkcs11 -keyform engine -key slot_0-id_2 -$HASH -passin pass:$PIN \
+    -new -nodes -config $DIR/ca2-cross.conf -out $DIR/ca2.csr
+    exit
+    " | $OPENSSL_BIN
 
 
 echo "CA 1"
 openssl x509 -noout -modulus -in work/ca1.crt | openssl md5
+#openssl req -text -noout -verify -in work/ca1.csr
 openssl req -noout -modulus -in work/ca1.csr | openssl md5
 
 echo "CA 2"
 openssl x509 -noout -modulus -in work/ca2.crt | openssl md5
+#openssl req -text -noout -verify -in work/ca2.csr
 openssl req -noout -modulus -in work/ca2.csr | openssl md5
+
 
 echo "Cross signing CA roots"
 
@@ -100,10 +109,12 @@ read -p "Push enter to continue"
 echo "Cross signing root certificate B"
 echo "Press yubikey button when light on device flashes"
 echo "$OPENSSL_ENGINE
-    x509 -engine pkcs11 -CAkeyform engine -CAkey slot_0-id_2 -$HASH -CA $DIR/ca1.crt -CAcreateserial \
+    x509 -engine pkcs11 -CAkeyform engine -CAkey slot_0-id_2 -$HASH -CA $DIR/ca1.crt \
     -req -days 36500 -passin pass:$PIN -in $DIR/ca2.csr -out $DIR/ca2-cross.crt
     exit
     " | $OPENSSL_BIN
+
+exit
 
 echo "Insert second root yubikey"
 read -p "Push enter to continue"
@@ -111,7 +122,7 @@ read -p "Push enter to continue"
 echo "Cross signing root certificate A"
 echo "Press yubikey button when light on device flashes"
 echo "$OPENSSL_ENGINE
-    x509 -engine pkcs11 -CAkeyform engine -CAkey slot_0-id_2 -$HASH -CA $DIR/ca2.crt -CAcreateserial \
+    x509 -engine pkcs11 -CAkeyform engine -CAkey slot_0-id_2 -$HASH -CA $DIR/ca2.crt -CAserial $DIR/ca2.srl \
     -req -days 36500 -passin pass:$PIN -in $DIR/ca1.csr -out $DIR/ca1-cross.crt
     exit
     " | $OPENSSL_BIN
