@@ -36,7 +36,7 @@ echo "Generating intermediate key"
 openssl genrsa -out $DIR/$NAME.key $KEYLEN
 
 echo "Generating intermediate CSR"
-openssl req -new -out $DIR/$NAME.csr -sha256 -days 3650 -config $DIR/int.conf -key $DIR/$NAME.key
+openssl req -new -sha256 -days 3650 -config $DIR/int.conf -key $DIR/$NAME.key -out $DIR/$NAME.csr 
 
 echo "Insert root yubikey"
 read -p "Push enter to continue"
