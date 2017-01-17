@@ -57,6 +57,7 @@ read -p "Push enter to continue"
 
 echo "Loading first key onto device"
 yubico-piv-tool -s ${SLOT} -a import-key -i $DIR/ca1.key --touch-policy=always
+rm $DIR/ca1.key 
 
 echo "Loading first cross signed certificate onto device"
 yubico-piv-tool -s ${SLOT} -a import-certificate -i $DIR/ca1-cross.crt
@@ -69,6 +70,7 @@ read -p "Push enter to continue"
 
 echo "Loading second key onto device"
 yubico-piv-tool -s ${SLOT} -a import-key -i $DIR/ca2.key --touch-policy=always
+rm $DIR/ca2.key 
 
 echo "Loading second cross signed certificate onto device"
 yubico-piv-tool -s ${SLOT} -a import-certificate -i $DIR/ca2-cross.crt
