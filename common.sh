@@ -30,8 +30,8 @@ function openssl_exec {
 }
 
 function openssl_selfsign {
-    openssl_exec "req -engine pkcs11 -keyform engine -key slot_0-id_2 -passin pass:$PIN \
-    -x509 -new -nodes -$HASH -days 36500 -verify -config $1 -out $2"
+    openssl_exec "req -engine pkcs11 -keygen_engine pkcs11 -keyform engine -key slot_0-id_2 -passin pass:$PIN \
+    -x509 -new -newkey rsa:2048 -nodes -$HASH -days 36500 -verify -config $1 -out $2"
 }
 
 function openssl_csr {
