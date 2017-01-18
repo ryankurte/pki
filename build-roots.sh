@@ -44,7 +44,10 @@ echo "Insert first root yubikey"
 read -p "Push enter to continue"
 
 echo "Generating root key A on device"
-#yubico-piv-tool -s 9c -A RSA2048 -a generate -o $DIR/ca1-root.pem --touch-policy=never
+yubico-piv-tool -s ${SLOT} -A RSA2048 -a generate -o $DIR/ca1-root.pem --touch-policy=never
+yubico-piv-tool -s ${SLOT} -S '/CN=fake/OU=fake/O=fake.com/' -P ${PIN} -i ${DIR}/ca1-root.pem -a verify -a selfsign
+yubico-piv-tool -a status
+
 #$OPENSSL_BIN genrsa -out $DIR/ca1.key ${KEYLEN}
 #yubico-piv-tool -s ${SLOT} -a import-key -i $DIR/ca1.key 
 
@@ -64,9 +67,10 @@ openssl_csr $DIR/ca1-cross.conf $DIR/ca1-cross.csr
 #read -p "Push enter to continue"
 #
 #echo "Generating root key B on device"
-##yubico-piv-tool -s 9c -A RSA2048 -a generate -o $DIR/ca2-root.pem --touch-policy=never
-#$OPENSSL_BIN genrsa -out $DIR/ca2.key ${KEYLEN}
-#yubico-piv-tool -s ${SLOT} -a import-key -i $DIR/ca2.key 
+#yubico-piv-tool -s 9c -A RSA2048 -a generate -o $DIR/ca2-root.pem --touch-policy=never
+#yubico-piv-tool -s ${SLOT} -S '/CN=fake/OU=fake/O=fake.com/' -P ${PIN} -a verify -a selfsign
+##$OPENSSL_BIN genrsa -out $DIR/ca2.key ${KEYLEN}
+##yubico-piv-tool -s ${SLOT} -a import-key -i $DIR/ca2.key 
 #
 #echo "Self signing root certificate B"
 #echo "Press yubikey button when light flashes"
