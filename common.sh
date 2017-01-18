@@ -26,6 +26,7 @@ function openssl_exec {
     echo "${OPENSSL_ENGINE}
     $1
     " | $OPENSSL_BIN
+    echo ""
 }
 
 function openssl_selfsign {

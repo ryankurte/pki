@@ -45,7 +45,7 @@ read -p "Push enter to continue"
 
 echo "Generating root key A on device"
 #yubico-piv-tool -s 9c -A RSA2048 -a generate -o $DIR/ca1-root.pem --touch-policy=never
-#openssl genrsa -out $DIR/ca1.key ${KEYLEN}
+#$OPENSSL_BIN genrsa -out $DIR/ca1.key ${KEYLEN}
 #yubico-piv-tool -s ${SLOT} -a import-key -i $DIR/ca1.key 
 
 echo "Self signing root certificate A"
@@ -54,44 +54,53 @@ openssl_selfsign $DIR/ca1-root.conf $DIR/ca1-root.crt
 
 echo "Loading root certificate A"
 yubico-piv-tool -s ${SLOT} -a import-certificate -i $DIR/ca1-root.crt
-openssl x509 -in $DIR/ca1-root.crt -serial -noout | sed -e "s/serial=//g" > $DIR/ca1-root.srl
+$OPENSSL_BIN x509 -in $DIR/ca1-root.crt -serial -noout | sed -e "s/serial=//g" > $DIR/ca1-root.srl
 
 echo "Generating CSR for root A cross signing"
 openssl_csr $DIR/ca1-cross.conf $DIR/ca1-cross.csr
 
-printf "\n**************************\n"
-echo "Insert second root yubikey"
-read -p "Push enter to continue"
-
-echo "Generating root key B on device"
-#yubico-piv-tool -s 9c -A RSA2048 -a generate -o $DIR/ca2-root.pem --touch-policy=never
-#openssl genrsa -out $DIR/ca2.key ${KEYLEN}
+#printf "\n**************************\n"
+#echo "Insert second root yubikey"
+#read -p "Push enter to continue"
+#
+#echo "Generating root key B on device"
+##yubico-piv-tool -s 9c -A RSA2048 -a generate -o $DIR/ca2-root.pem --touch-policy=never
+#$OPENSSL_BIN genrsa -out $DIR/ca2.key ${KEYLEN}
 #yubico-piv-tool -s ${SLOT} -a import-key -i $DIR/ca2.key 
-
-echo "Self signing root certificate B"
-echo "Press yubikey button when light flashes"
-openssl_selfsign $DIR/ca2-root.conf $DIR/ca2-root.crt
-
-echo "Loading root certificate B"
-yubico-piv-tool -s ${SLOT} -a import-certificate -i $DIR/ca2-root.crt
-openssl x509 -in $DIR/ca2-root.crt -serial -noout | sed -e "s/serial=//g" > $DIR/ca2-root.srl
-
-echo "Generating CSR for root B cross signing"
-openssl_csr $DIR/ca2-cross.conf $DIR/ca2-cross.csr
+#
+#echo "Self signing root certificate B"
+#echo "Press yubikey button when light flashes"
+#openssl_selfsign $DIR/ca2-root.conf $DIR/ca2-root.crt
+#
+#echo "Loading root certificate B"
+#yubico-piv-tool -s ${SLOT} -a import-certificate -i $DIR/ca2-root.crt
+#$OPENSSL_BIN x509 -in $DIR/ca2-root.crt -serial -noout | sed -e "s/serial=//g" > $DIR/ca2-root.srl
+#
+#echo "Generating CSR for root B cross signing"
+#openssl_csr $DIR/ca2-cross.conf $DIR/ca2-cross.csr
 
 echo "CA 1"
-openssl x509 -noout -modulus -in work/ca1-root.crt | openssl md5
-openssl req -noout -modulus -in work/ca1-cross.csr | openssl md5
+$OPENSSL_BIN x509 -noout -modulus -in work/ca1-root.crt | $OPENSSL_BIN md5
+$OPENSSL_BIN req -noout -modulus -in work/ca1-cross.csr | $OPENSSL_BIN md5
 
-openssl x509 -text -noout -in work/ca1-root.crt
-openssl req -text -noout -verify -in work/ca1-cross.csr
+# Get key modulus
+echo "Public key information"
+openssl rsa -pubin -inform PEM -text -noout -in work/ca1-root.pem
+
+echo "Cert key information"
+$OPENSSL_BIN x509 -text -noout -in work/ca1-root.crt
+
+echo "CSR key information"
+$OPENSSL_BIN req -text -noout -verify -in work/ca1-cross.csr
+
+exit
 
 echo "CA 2"
-openssl x509 -noout -modulus -in work/ca2-root.crt | openssl md5
-openssl req -noout -modulus -in work/ca2-cross.csr | openssl md5
+$OPENSSL_BIN x509 -noout -modulus -in work/ca2-root.crt | $OPENSSL_BIN md5
+$OPENSSL_BIN req -noout -modulus -in work/ca2-cross.csr | $OPENSSL_BIN md5
 
-openssl x509 -text -noout -in work/ca1-root.crt
-openssl req -text -noout -verify -in work/ca2-cross.csr
+$OPENSSL_BIN x509 -text -noout -in work/ca1-root.crt
+$OPENSSL_BIN req -text -noout -verify -in work/ca2-cross.csr
 
 
 
