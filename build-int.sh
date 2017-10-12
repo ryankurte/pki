@@ -6,15 +6,20 @@
 . ./common.sh
 
 # Check input count
-if [ "$#" -ne 2 ]; then 
-    echo "Usage: $0 MODE NAME"
+if [ "$#" -ne 6 ]; then 
+    echo "Usage: $0 [MODE CN OU URL EMAIL]"
     echo "MODE - local for local certificate, yubikey for yubikey based certificate"
-    echo "NAME - intermediate certificate name"
+    echo "FILE - intermediate file names"
+    echo "NAME - Name for the generated certificates"
     exit
 fi
 
 MODE=$1
-NAME=$2
+FILE=$2
+NAME=$3
+OU=$4
+URL=$5
+EMAIL=$6
 
 if [ "$MODE" != "local" ] && [ "$MODE" != "yubikey" ]; then
     echo "Unrecognised mode (expected local or yubikey)"
@@ -30,13 +35,13 @@ fi
 echo "Generating new intermediate cert: $NAME"
 
 echo "Configuring intermediate cert from ./int.conf.in"
-build_root_config "INTERMEDIATE" ./int.conf.in $DIR/int.conf
+build_root_config "INTERMEDIATE" ./int.conf.in $DIR/$FILE.conf
 
 echo "Generating intermediate key"
-openssl genrsa -out $DIR/$NAME.key $KEYLEN
+openssl genrsa -out $DIR/$FILE.key $KEYLEN
 
 echo "Generating intermediate CSR"
-openssl req -new -out $DIR/$NAME.csr -sha256 -days 3650 -config $DIR/int.conf -key $DIR/$NAME.key
+openssl req -new -out $DIR/$FILE.csr -sha256 -days 3650 -config $DIR/$FILE.conf -key $DIR/$FILE.key
 
 echo "Insert root yubikey"
 read -p "Push enter to continue"
@@ -49,12 +54,12 @@ echo "Signing certificate"
 echo "Press yubikey button when light on device flashes"
 echo "$OPENSSL_ENGINE
     x509 -engine pkcs11 -CAkeyform engine -CAkey slot_0-id_2 -$HASH -CA $DIR/yk-ca.crt -req \
-    -passin pass:$PIN -in $DIR/$NAME.csr -out $DIR/$NAME.crt
+    -passin pass:$PIN -in $DIR/$FILE.csr -out $DIR/$FILE.crt
     exit
     " | $OPENSSL_BIN
 
 echo ""
-echo "Created intermediate cert: $NAME"
+echo "Created intermediate cert: $FILE"
 
 # Load cert and key in yubikey mode
 if [ "$MODE" = "yubikey" ]; then
@@ -64,13 +69,13 @@ if [ "$MODE" = "yubikey" ]; then
     read -p "Push enter to continue"
 
     echo "Loading first key onto device"
-    yubico-piv-tool -s ${SLOT} -a import-key -i $DIR/$NAME.key
+    yubico-piv-tool -s ${SLOT} -a import-key -i $DIR/$FILE.key
 
     echo "Loading first cross signed certificate onto device"
-    yubico-piv-tool -s ${SLOT} -a import-certificate -i $DIR/$NAME.crt
+    yubico-piv-tool -s ${SLOT} -a import-certificate -i $DIR/$FILE.crt
 
     echo "Yubikey status:"
     yubico-piv-tool -a status
 
-    rm $DIR/$NAME.key
+    rm $DIR/$FILE.key
 fi

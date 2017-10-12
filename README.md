@@ -53,9 +53,16 @@ TODO
 
 ## Usage
 
-1. `./build-roots.sh` to build roots and load onto yubikeys
+1. `./build-roots.sh CN OU URL EMAIL` to build roots and load onto yubikeys
 2. add `work/roots.crt` to your allowed CAs
-3. `./build-int.sh NAME` to build an intermediate CA with the provided name that can be validated against the above roots.
+3. `./build-int.sh TYPE FILE CN OU URL EMAIL` to build an intermediate CA with the provided name that can be validated against the above roots.
+
+Something like:
+```
+./build-roots.sh "Totally Legit CA Inc." "Dept. of Small Fires" "legit-ca.org" "sup@legit-ca.org"
+
+./build-int.sh yubikey int-01 "Totes Legit CA Inc Intermediate A" "Dept. of Small Fires" legit-ca.org sup@legit-ca.org
+```
 
 Note that if you intend to use revocation you will need to include a method for distributing revocations.
 
@@ -74,9 +81,9 @@ OSX: install with `brew install openssl engine_pkcs11 opensc yubico-piv-tool`.
 ## TODO
 
 - [ ] Move key generation and operations to yubikey, should be possible but may require libssl calls for self signed roots
-- [ ] Add build-int feature to build intermediate ca on another yubikey (instead of locally)
+- [x] Add build-int feature to build intermediate ca on another yubikey (instead of locally)
 - [ ] Add build-int feature to sign a provided certificate so keys don't have to leave the intermediate device
-- [ ] Could remove keys once generated
+- [x] Could remove keys once generated
 - [ ] Support eliptic curve as well as RSA certificates
 - [ ] Optionally set management keys and prompt for pin/puk change
 - [ ] Discover paths or platform so this works on OSX or Linux

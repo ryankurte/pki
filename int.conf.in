@@ -16,15 +16,15 @@ commonName              = supplied
 emailAddress            = supplied
 
 [ req_distinguished_name ]
-commonName = Common Name (eg, YOUR name)
-emailAddress = Email Address
-0.organizationName = Organization Name (eg, company)
-organizationalUnitName =  Organizational Unit Name (eg, section)
+commonName                      = COMMON_NAME
+emailAddress                    = EMAIL
+0.organizationName              = COMMON_NAME
+organizationalUnitName          = OU
 
-commonName_default = COMMON_NAME
-emailAddress_default = EMAIL
-0.organizationName_default = COMMON_NAME
-organizationalUnitName_default = OU
+commonName_default              = Common Name
+emailAddress_default            = Email
+0.organizationName_default      = Organisation Name
+organizationalUnitName_default  = Organisational Unit
 
 [ v3_req ]
 subjectAltName=email:move
