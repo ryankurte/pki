@@ -29,12 +29,10 @@ name_opt         = multiline,-esc_msb,utf8
 
 
 [ req ]
+distinguished_name  = req_distinguished_name
 x509_extensions  = v3_ca
 req_extensions   = v3_req
-
-distinguished_name  = req_distinguished_name
 prompt              = no
-policy              = policy_match
 
 
 # Policy defining requirements for sub certificates
@@ -58,7 +56,7 @@ subjectAltName=email:move
 [ v3_ca ]
 subjectKeyIdentifier        = hash
 authorityKeyIdentifier      = keyid:always,issuer:always
-basicConstraints            = critical,CA:true,pathlen:1
+basicConstraints            = critical,CA:true,pathlen:{{ .PathLen }}
 crlDistributionPoints       = @crl_info
 keyUsage                    = critical,keyCertSign,cRLSign
 #nameConstraints             = critical,@nc
@@ -67,6 +65,5 @@ keyUsage                    = critical,keyCertSign,cRLSign
 caIssuers;URI.0         = {{ .AIA }}/{{ .FileName }}.crt
 
 [ crl_info ]
-URI.0                   = {{ .CRL }}/{{ .FileName }}.crl
-
+URI.0                   = {{ .CRL }}
 
