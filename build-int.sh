@@ -6,76 +6,48 @@
 . ./common.sh
 
 # Check input count
-if [ "$#" -ne 7 ]; then 
-    echo "Usage: $0 [MODE FILE NAME]"
+if [ "$#" -ne 2 ]; then 
+    echo "Usage: $0 MODE FILE"
     echo "MODE - local for local certificate, yubikey for yubikey based certificate"
-    echo "FILE - intermediate file names"
-    echo "NAME - Name for the generated certificates"
+    echo "FILE - intermediate certificate file name"
     exit
 fi
 
 MODE=$1
 FILE=$2
-NAME=$3
 
 if [ "$MODE" != "local" ] && [ "$MODE" != "yubikey" ]; then
     echo "Unrecognised mode (expected local or yubikey)"
     exit
 fi
 
-# Load vars if vars.sh exists
-if [ -f ./$DIR/vars.sh ]; then
-    echo "Loading vars from: ./$DIR/vars.sh "
-    . ./$DIR/vars.sh
-fi
-
 echo "Generating new intermediate cert: $NAME"
 
 echo "Configuring intermediate cert from ./int.conf.in"
-build_root_config "INTERMEDIATE" ./int.conf.in $DIR/$FILE.conf
+fcfg --input=int.conf.in --output=$DIR/$FILE.conf --config=site.yml -v=FileName:$FILE -vPrivateKey:$FILE -vPathLen:0 --quiet
 
 echo "Generating intermediate key"
 openssl genrsa -out $DIR/$FILE.key $KEYLEN
 
-echo "Configuring CSR"
-fcfg --input=int.conf.in --output=$DIR/$FILE.conf --config=site.yml -v=FileName:$FILE -vPrivateKey:$FILE --quiet
-
 echo "Generating intermediate CSR"
-openssl req -new -out $DIR/$FILE.csr -sha256 -days 3650 -config $DIR/$FILE.conf -key $DIR/$FILE.key
+prepare_files $DIR/$FILE
+openssl req -new -config $DIR/$FILE.conf -key $DIR/$FILE.key -out $DIR/$FILE.csr 
 
-echo "Insert root yubikey"
-read -p "Push enter to continue"
+read -p "Insert root yubikey and press enter to continue..."
 
 echo "Fetching yubikey CA cert"
-yubico-piv-tool -a read-cert -s 9c > work/yk-ca.crt
-openssl x509 -in $DIR/yk-ca.crt -serial -noout | sed -e "s/serial=//g" > $DIR/yk-ca.srl
+yk_fetch $DIR/yk-ca.crt $DIR/yk-ca.srl
 
-echo "Signing certificate"
-echo "Press yubikey button when light on device flashes"
-echo "$OPENSSL_ENGINE
-    x509 -engine pkcs11 -CAkeyform engine -CAkey slot_0-id_2 -$HASH -CA $DIR/yk-ca.crt -req \
-    -passin pass:$PIN -in $DIR/$FILE.csr -out $DIR/$FILE.crt
-    exit
-    " | $OPENSSL_BIN
+echo "Signing intermediate certificate"
+yk_sign_ca $DIR/yk-ca.crt $DIR/$FILE.csr $DIR/$FILE.conf $DIR/$FILE.crt
 
-echo ""
-echo "Created intermediate cert: $FILE"
+echo "Created intermediate certificate: $DIR/$FILE.crt"
 
 # Load cert and key in yubikey mode
 if [ "$MODE" = "yubikey" ]; then
-    echo "Loading intermediate onto yubikey"
-    
-    echo "Insert new intermediate yubikey"
-    read -p "Push enter to continue"
+    read -p "Insert new intermediate yubikey and press enter to continue..."
 
-    echo "Loading first key onto device"
-    yubico-piv-tool -s ${SLOT} -a import-key -i $DIR/$FILE.key
-
-    echo "Loading first cross signed certificate onto device"
-    yubico-piv-tool -s ${SLOT} -a import-certificate -i $DIR/$FILE.crt
-
-    echo "Yubikey status:"
-    yubico-piv-tool -a status
+    yk_load $DIR/$FILE.crt $DIR/$FILE.key
 
     rm $DIR/$FILE.key
 fi

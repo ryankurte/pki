@@ -27,11 +27,11 @@ req_extensions   = v3_req
 cert_opt         = ca_default
 name_opt         = multiline,-esc_msb,utf8
 
+email_in_dn             = no
+unique_subject          = no 
 
 [ req ]
 distinguished_name  = req_distinguished_name
-x509_extensions  = v3_ca
-req_extensions   = v3_req
 prompt              = no
 
 

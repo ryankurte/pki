@@ -27,20 +27,58 @@ OPENSSL_ENGINE="engine dynamic -pre SO_PATH:/usr/local/lib/engines/engine_pkcs11
 
 function build_selfsigned {
     openssl req -new -config $DIR/$1.conf -key $DIR/$1.key -out $DIR/$1.csr
-
     openssl ca -selfsign -days $CA_DAYS -config $DIR/$1.conf -in $DIR/$1.csr -out $DIR/$1.crt
 }
 
 function build_and_sign {
-    openssl req -new -config $DIR/$2.conf -out $DIR/$2.csr -key $DIR/$3.key
-
+    echo "Building certificate with ca: $1 from config: $2 and key: $3"
+    openssl req -new -config $DIR/$2.conf -key $DIR/$3.key -out $DIR/$2.csr
     openssl ca -days $CA_DAYS -config $DIR/$1.conf -in $DIR/$2.csr -out $DIR/$2.crt
 }
 
 function prepare_files {
-    cp /dev/null $DIR/$1.db
-    cp /dev/null $DIR/$1.db.attr
-    echo 01 > ${DIR}/$1.crt.srl
-    echo 01 > ${DIR}/$1.crl.srl
+    cp /dev/null $1.db
+    cp /dev/null $1.db.attr
+    echo 01 > $1.crt.srl
+    echo 01 > $1.crl.srl
+}
 
+function yk_load {
+    echo "Loading key $2 onto device"
+    yubico-piv-tool -s ${SLOT} -a import-key -i $2 --touch-policy=always
+
+    echo "Loading certificate $1 onto device"
+    yubico-piv-tool -s ${SLOT} -a import-certificate -i $1
+
+    echo "Device status:"
+    yubico-piv-tool -a status
+}
+
+function yk_fetch {
+    echo "Fetching yubikey CA cert"
+    yubico-piv-tool -a read-cert -s 9c > $1
+    openssl x509 -in $1 -serial -noout | sed -e "s/serial=//g" > $2
+}
+
+
+function yk_sign_ca {
+    echo "Signing certificate request $2 with ca cert $1 and config $3, press yubikey button when light on device flashes"
+    echo "$OPENSSL_ENGINE
+        ca -batch -engine pkcs11 -keyform engine -keyfile slot_0-id_2 -cert $1 -config $3 \
+        -passin pass:$PIN -in $2 -out $4
+        exit
+        " | $OPENSSL_BIN
+
+    echo ""
+}
+
+function yk_sign_client {
+    echo "Signing certificate request $2 with ca cert $1, press yubikey button when light on device flashes"
+    echo "$OPENSSL_ENGINE
+        x509 -engine pkcs11 -CAkeyform engine -CAkey slot_0-id_2 -$HASH -CA $1 -req \
+        -passin pass:$PIN -in $2 -out $3
+        exit
+        " | $OPENSSL_BIN
+
+    echo ""
 }

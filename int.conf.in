@@ -18,8 +18,6 @@ default_days     = 9999
 default_crl_days = 9999
 unique_subject   = no
 
-distinguished_name  = req_distinguished_name
-prompt              = yes
 policy              = policy_match
 
 copy_extensions     = none
@@ -29,6 +27,12 @@ req_extensions      = v3_req
 cert_opt         = ca_default
 name_opt         = multiline,-esc_msb,utf8
 
+email_in_dn             = no
+unique_subject          = no 
+
+[ req ]
+distinguished_name  = req_distinguished_name
+prompt              = yes
 
 # Policy defining requirements for sub certificates
 [ policy_match ]
@@ -38,15 +42,15 @@ commonName                      = supplied
 emailAddress                    = supplied
 
 [ req_distinguished_name ]
-commonName                      = {{ .CommonName }} {{ .Suffix }}
-organizationName                = {{ .OrgName }}
-organizationalUnitName          = {{ .OrgUnitName }}
-emailAddress                    = {{ .Email }}
+commonName_default                      = {{ .CommonName }}
+organizationName_default                = {{ .OrgName }}
+organizationalUnitName_default          = {{ .OrgUnitName }}
+emailAddress_default                    = {{ .Email }}
 
-commonName_default              = Common Name
-emailAddress_default            = Email
-organizationName_default        = Organisation Name
-organizationalUnitName_default  = Organisational Unit
+commonName              = Common Name
+emailAddress            = Email
+organizationName        = Organisation Name
+organizationalUnitName  = Organisational Unit
 
 [ v3_req ]
 subjectAltName         = email:move
@@ -55,13 +59,15 @@ subjectAltName         = email:move
 subjectKeyIdentifier   = hash
 authorityKeyIdentifier = keyid:always,issuer:always
 
-basicConstraints = critical,CA:true,pathlen:0
+basicConstraints = critical,CA:true,pathlen:{{ .PathLen }}
 keyUsage         = critical,keyAgreement,digitalSignature,keyCertSign
 nameConstraints  = critical,@nc
 
+{{ if .URL }}
 [ nc ]
-permitted;otherName=1.3.6.1.5.5.7.8.7;IA5:{{. URL }}
-permitted;URI.0={{. URL }}
-permitted;URI.1=.{{. URL }}
+permitted;otherName=1.3.6.1.5.5.7.8.7;IA5:{{ .URL }}
+permitted;URI.0={{ .URL }}
+permitted;URI.1=.{{ .URL }}
 permitted;IP.0=0.0.0.0/255.255.255.255
 permitted;IP.1=::/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+{{ end }}

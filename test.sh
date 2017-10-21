@@ -5,19 +5,23 @@ CONFIG="\'/CN=$TESTCN/OU=$TESTCA/O=$test.com/\'"
 
 set -e
 
-echo "Building root CAs"
-./build-roots.sh "Fake Ltd." "Research" "fake.nz"
+#./build-roots.sh "Fake Ltd." "Research" "fake.nz"
+#./build-int.sh "yubikey" "test-int"
+#./build-client.sh "yubikey" "test-client"
 
 echo "Checking cross CAs"
 openssl verify -CAfile work/root-a.crt work/cross-b.crt
 openssl verify -CAfile work/root-b.crt work/cross-a.crt
 
+openssl verify -CAfile work/roots.crt work/cross-a.crt
+openssl verify -CAfile work/roots.crt work/cross-b.crt
+
 echo "Checking intermediate generation"
-./build-int.sh "yubikey" "test"
-openssl verify -verbose -CAfile $DIR/roots.crt $DIR/test.crt
+
+openssl verify -verbose -CAfile $DIR/roots.crt $DIR/test-int.crt
 
 echo "Checking client generation"
-#TODO:
+openssl verify -verbose -CAfile $DIR/roots.crt $DIR/test-client.crt
 
 echo "Checking intermediate revocation"
 #TODO:
