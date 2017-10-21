@@ -59,7 +59,7 @@ TODO
 
 Something like:
 ```
-./build-roots.sh "Totally Legit CA Inc." "Dept. of Small Fires" "legit-ca.org" "sup@legit-ca.org"
+./build-roots.sh "Totally Legit CA Inc." "Dept. of Small Fires" "legit-ca.org" "sup@legit-ca.org" "https://legit-ca.org/csr"
 
 ./build-int.sh yubikey int-01 "Totes Legit CA Inc Intermediate A" "Dept. of Small Fires" legit-ca.org sup@legit-ca.org
 ```

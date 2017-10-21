@@ -6,8 +6,8 @@
 . ./common.sh
 
 # Check input count
-if [ "$#" -ne 6 ]; then 
-    echo "Usage: $0 [MODE CN OU URL EMAIL]"
+if [ "$#" -ne 7 ]; then 
+    echo "Usage: $0 [MODE FILE NAME]"
     echo "MODE - local for local certificate, yubikey for yubikey based certificate"
     echo "FILE - intermediate file names"
     echo "NAME - Name for the generated certificates"
@@ -17,9 +17,6 @@ fi
 MODE=$1
 FILE=$2
 NAME=$3
-OU=$4
-URL=$5
-EMAIL=$6
 
 if [ "$MODE" != "local" ] && [ "$MODE" != "yubikey" ]; then
     echo "Unrecognised mode (expected local or yubikey)"
@@ -39,6 +36,9 @@ build_root_config "INTERMEDIATE" ./int.conf.in $DIR/$FILE.conf
 
 echo "Generating intermediate key"
 openssl genrsa -out $DIR/$FILE.key $KEYLEN
+
+echo "Configuring CSR"
+fcfg --input=int.conf.in --output=$DIR/$FILE.conf --config=site.yml -v=FileName:$FILE -vPrivateKey:$FILE --quiet
 
 echo "Generating intermediate CSR"
 openssl req -new -out $DIR/$FILE.csr -sha256 -days 3650 -config $DIR/$FILE.conf -key $DIR/$FILE.key

@@ -9,8 +9,8 @@ echo "Building root CAs"
 ./build-roots.sh "Fake Ltd." "Research" "fake.nz"
 
 echo "Checking cross CAs"
-openssl verify -verbose -CAfile $DIR/ca2.crt $DIR/ca1-cross.crt
-openssl verify -verbose -CAfile $DIR/ca1.crt $DIR/ca2-cross.crt
+openssl verify -CAfile work/root-a.crt work/cross-b.crt
+openssl verify -CAfile work/root-b.crt work/cross-a.crt
 
 echo "Checking intermediate generation"
 ./build-int.sh "yubikey" "test"

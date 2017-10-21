@@ -1,0 +1,72 @@
+# Root certificate configuration
+
+[ ca ]
+default_ca = root_ca
+
+[ root_ca ]
+dir = ./work
+
+certificate      = $dir/{{ .FileName }}.crt
+private_key      = $dir/{{ .PrivateKey }}.key
+new_certs_dir    = $dir
+database         = $dir/{{ .FileName }}.db
+serial           = $dir/{{ .FileName }}.crt.srl
+crlnumber        = $dir/{{ .FileName }}.crl.srl
+
+default_md       = sha512
+default_days     = 9999
+default_crl_days = 9999
+unique_subject   = no
+
+policy           = policy_match
+
+copy_extensions  = none
+x509_extensions  = v3_ca
+req_extensions   = v3_req
+
+cert_opt         = ca_default
+name_opt         = multiline,-esc_msb,utf8
+
+
+[ req ]
+x509_extensions  = v3_ca
+req_extensions   = v3_req
+
+distinguished_name  = req_distinguished_name
+prompt              = no
+policy              = policy_match
+
+
+# Policy defining requirements for sub certificates
+[ policy_match ]
+organizationName        = match
+organizationalUnitName  = supplied
+commonName              = supplied      
+emailAddress            = optional
+
+
+[ req_distinguished_name ]
+commonName              = {{ .CommonName }} {{ .Suffix }}
+organizationName        = {{ .OrgName }}
+organizationalUnitName  = {{ .OrgUnitName }}
+emailAddress            = {{ .Email }}
+
+[ v3_req ]
+subjectAltName=email:move
+
+
+[ v3_ca ]
+subjectKeyIdentifier        = hash
+authorityKeyIdentifier      = keyid:always,issuer:always
+basicConstraints            = critical,CA:true,pathlen:1
+crlDistributionPoints       = @crl_info
+keyUsage                    = critical,keyCertSign,cRLSign
+#nameConstraints             = critical,@nc
+
+[ issuer_info ]
+caIssuers;URI.0         = {{ .AIA }}/{{ .FileName }}.crt
+
+[ crl_info ]
+URI.0                   = {{ .CRL }}/{{ .FileName }}.crl
+
+
