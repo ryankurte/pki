@@ -6,7 +6,7 @@
 . ./common.sh
 
 # Check input count
-if [ "$#" -ne 2 && "$#" -ne 3 ]; then 
+if [ "$#" -ne 2 ]; then 
     echo "Usage: $0 MODE FILE [CONFIG]"
     echo "MODE - local for local certificate, yubikey for yubikey based certificate"
     echo "FILE - client certificate file name"
@@ -30,15 +30,15 @@ openssl genrsa -out $DIR/$FILE.key $KEYLEN
 echo "Generating client CSR"
 openssl req -new -out $DIR/$FILE.csr -key $DIR/$FILE.key
 
-read -p "Insert root yubikey and press enter to continue..."
+read -p "Insert intermediate yubikey and press enter to continue..."
 
-echo "Fetching yubikey CA cert"
-yk_fetch $DIR/yk-ca.crt $DIR/yk-ca.srl
+echo "Fetching yubikey intermediate cert"
+yk_fetch $DIR/yk-int.crt $DIR/yk-int.srl
 
 echo "Signing client certificate"
-yk_sign $DIR/yk-ca.crt $DIR/$FILE.csr $DIR/$FILE.crt
+yk_sign_client $DIR/yk-int.crt $DIR/$FILE.csr $DIR/$FILE.crt
 
-echo "Created client certificate: $DIR/$FILE.crt"
+echo "Created client certificate: $FILE"
 
 # Load cert and key in yubikey mode
 if [ "$MODE" = "yubikey" ]; then
