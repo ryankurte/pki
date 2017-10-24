@@ -42,10 +42,7 @@ fcfg --input=ca.conf.in --output=$DIR/cross-b.conf --config=site.yml -v=FileName
 build_and_sign root-a cross-b root-b
 
 echo "Packaging ROOT CAs"
-cat $DIR/root-a.crt  > $DIR/roots.crt
-cat $DIR/root-b.crt  >> $DIR/roots.crt
-cat $DIR/cross-a.crt >> $DIR/roots.crt
-cat $DIR/cross-b.crt >> $DIR/roots.crt
+cat $DIR/root-a.crt $DIR/root-b.crt $DIR/cross-a.crt $DIR/cross-b.crt > $DIR/roots.crt
 
 echo "Completed root and cross CA generation"
 echo "Load certificates and keys with ./load-roots.sh"

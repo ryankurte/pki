@@ -82,3 +82,25 @@ function yk_sign_client {
 
     echo ""
 }
+
+function yk_revoke {
+    echo "Revoking certificate $3 using ca $1 ($2), press yubikey button when light on device flashes"
+    echo "$OPENSSL_ENGINE
+        ca -batch -engine pkcs11 -keyform engine -keyfile slot_0-id_2 -cert $1 -config $2 \
+        -passin pass:$PIN -revoke $3
+        exit
+        " | $OPENSSL_BIN
+
+    echo ""
+}
+
+function yk_crl {
+    echo "Generating CRL for CA $1 ($2), press yubikey button when light on device flashes"
+    echo "$OPENSSL_ENGINE
+        ca -batch -engine pkcs11 -keyform engine -keyfile slot_0-id_2 -cert $1 -config $2 \
+        -passin pass:$PIN -gencrl -out $3
+        exit
+        " | $OPENSSL_BIN
+
+    echo ""
+}
