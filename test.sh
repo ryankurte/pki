@@ -19,9 +19,10 @@ openssl verify -CAfile work/roots.crt work/cross-b.crt
 echo "Checking intermediate generation"
 
 openssl verify -verbose -CAfile $DIR/roots.crt $DIR/test-int.crt
+openssl verify -verbose -CAfile $DIR/roots.crt $DIR/test-int2.crt
 
 echo "Checking client generation"
-openssl verify -verbose -CAfile $DIR/roots.crt $DIR/test-client.crt
+openssl verify -verbose -CAfile $DIR/test-int2-chain.crt $DIR/test-client.crt
 
 echo "Checking intermediate revocation"
 #TODO:

@@ -23,3 +23,8 @@ yk_fetch $DIR/yk-ca.crt $DIR/yk-ca.srl
 echo "Revoking certificate"
 yk_revoke $DIR/yk-ca.crt $DIR/$CA.conf $FILE
 
+echo "Generating CRL"
+yk_crl $DIR/yk-ca.crt $DIR/$CA.conf $DIR/$CA.crl.pem
+
+echo "CRL info"
+openssl crl -in $DIR/$CA.crl.pem -noout -text

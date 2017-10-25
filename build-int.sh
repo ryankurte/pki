@@ -42,7 +42,9 @@ yk_fetch $DIR/yk-ca.crt $DIR/yk-ca.srl
 echo "Signing intermediate certificate"
 yk_sign_ca $DIR/yk-ca.crt $DIR/$FILE.csr $DIR/$FILE.conf $DIR/$FILE.crt
 
-echo "Created intermediate certificate: $DIR/$FILE.crt"
+cat $DIR/roots.crt $DIR/$FILE.crt > $DIR/$FILE-chain.crt
+
+echo "Created intermediate certificate: $DIR/$FILE.crt and chain $DIR/$FILE-chain.crt"
 
 # Load cert and key in yubikey mode
 if [ "$MODE" = "yubikey" ]; then

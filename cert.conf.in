@@ -19,7 +19,6 @@ default_crl_days = 9999
 unique_subject   = no
 
 policy           = policy_match
-
 copy_extensions  = none
 x509_extensions  = v3_ca
 req_extensions   = v3_req
@@ -32,6 +31,11 @@ unique_subject          = no
 
 [ req ]
 distinguished_name  = req_distinguished_name
+
+copy_extensions  = none
+x509_extensions     = v3_ca
+req_extensions      = v3_req
+
 prompt              = {{ .Prompt }}
 
 
@@ -40,7 +44,7 @@ prompt              = {{ .Prompt }}
 organizationName        = supplied
 organizationalUnitName  = supplied
 commonName              = supplied      
-emailAddress            = supplied
+emailAddress            = optional
 
 
 [ req_distinguished_name ]
@@ -91,4 +95,7 @@ caIssuers;URI.0         = {{ .AIA }}/{{ .FileName }}.crt
 {{ if .UseCRL }}
 [ crl_info ]
 URI.0                   = {{ .CRL }}
+
+[ crl_ext ]
+authorityKeyIdentifier=keyid:always,issuer:always
 {{ end }}

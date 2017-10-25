@@ -6,6 +6,7 @@ CommonName: Totally Legit CA Inc.
 OrgName: Totally Legit CA Inc.
 OrgUnitName: Certificate Authority
 Email: sup@legit-ca.org
+Country: NZ
 
 URL: legit-ca.org
 AIA: https://legit-ca.org/crt/

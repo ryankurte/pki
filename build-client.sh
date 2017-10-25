@@ -6,16 +6,18 @@
 . ./common.sh
 
 # Check input count
-if [ "$#" -ne 2 ]; then 
+if [ "$#" -ne 3 ]; then 
     echo "Usage: $0 MODE FILE [CONFIG]"
     echo "MODE - local for local certificate, yubikey for yubikey based certificate"
+    echo "CA - ca for database and config loading"
     echo "FILE - client certificate file name"
     echo "[CONFIG] - config file to bootstrap csr"
     exit
 fi
 
 MODE=$1
-FILE=$2
+CA=$2
+FILE=$3
 
 if [ "$MODE" != "local" ] && [ "$MODE" != "yubikey" ]; then
     echo "Unrecognised mode (expected local or yubikey)"
@@ -28,7 +30,7 @@ echo "Generating client key"
 openssl genrsa -out $DIR/$FILE.key $KEYLEN
 
 echo "Generating client CSR"
-openssl req -new -out $DIR/$FILE.csr -key $DIR/$FILE.key
+openssl req -new -out $DIR/$FILE.csr -key $DIR/$FILE.key 
 
 read -p "Insert intermediate yubikey and press enter to continue..."
 
