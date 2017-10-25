@@ -1,11 +1,14 @@
 ---
 
+Dir: ./work
+
 CommonName: Totally Legit CA Inc.
 OrgName: Totally Legit CA Inc.
 OrgUnitName: Certificate Authority
 Email: sup@legit-ca.org
 
 URL: legit-ca.org
-IAI: https://legit-ca.org/crt/
+AIA: https://legit-ca.org/crt/
 CRL: https://legit-ca.org/crl/
 
+Digest: sha512

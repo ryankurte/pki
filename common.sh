@@ -28,12 +28,14 @@ OPENSSL_ENGINE="engine dynamic -pre SO_PATH:/usr/local/lib/engines/engine_pkcs11
 function build_selfsigned {
     openssl req -new -config $DIR/$1.conf -key $DIR/$1.key -out $DIR/$1.csr
     openssl ca -selfsign -days $CA_DAYS -config $DIR/$1.conf -in $DIR/$1.csr -out $DIR/$1.crt
+    openssl x509 -in $DIR/$1.crt -outform pem -out $DIR/$1.pem
 }
 
 function build_and_sign {
     echo "Building certificate with ca: $1 from config: $2 and key: $3"
     openssl req -new -config $DIR/$2.conf -key $DIR/$3.key -out $DIR/$2.csr
     openssl ca -days $CA_DAYS -config $DIR/$1.conf -in $DIR/$2.csr -out $DIR/$2.crt
+    openssl x509 -in $DIR/$2.crt -outform pem -out $DIR/$2.pem
 }
 
 function prepare_files {
