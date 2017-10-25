@@ -43,25 +43,34 @@ Intermediate certificates can be deployed to infrastructure that needs to be abl
 2. Generate certificate and CSR
 3. Load intermediate CA from attached yubikey
 4. Sign CSR using attached yubikey
+4. Optionally push signed cert and key to yubikey
 
 ### Creating client certificates
 
-TODO
+1. Generate client key
+2. Generate client CSR
+3. Load intermediate CA from attached yubikey
+4. Sign CSR from attached yubikey
 
 ### Revoking client certificates
 
 
 ## Usage
 
-1. `./build-roots.sh CN OU URL EMAIL` to build roots and load onto yubikeys
-2. add `work/roots.crt` to your allowed CAs
-3. `./build-int.sh TYPE FILE CN OU URL EMAIL` to build an intermediate CA with the provided name that can be validated against the above roots.
+1. Edit `site.yml` with your root configuration
+2. `./build-roots.sh` to build and cross sign roots
+3. `./load-roots.sh` to load your cross signed roots onto yubikeys
+4. add `work/roots.crt` to your allowed CAs
+5. `./build-int.sh TYPE FILE` to build an intermediate CA with the provided name
+6. `./build-client.sh TYPE INT FILE` to build a client certificate with the provided name
 
 Something like:
 ```
-./build-roots.sh "Totally Legit CA Inc." "Dept. of Small Fires" "legit-ca.org" "sup@legit-ca.org" "https://legit-ca.org/csr"
+./build-roots.sh
 
-./build-int.sh yubikey int-01 "Totes Legit CA Inc Intermediate A" "Dept. of Small Fires" legit-ca.org sup@legit-ca.org
+./build-int.sh yubikey cross-a test-int
+
+./build-client.sh yubikey test-int test-client
 ```
 
 Note that if you intend to use revocation you will need to include a method for distributing revocations.
@@ -74,6 +83,7 @@ Output files will all be written to the `work/` directory.
 - OpenSC
 - Yubico PIV tool
 - engine_pks11.so
+- [fcfg](https://github.com/ryankurte/utils/tree/master/cmd/fcfg)
 
 OSX: install with `brew install openssl engine_pkcs11 opensc yubico-piv-tool`.
 
@@ -94,6 +104,7 @@ OSX: install with `brew install openssl engine_pkcs11 opensc yubico-piv-tool`.
 - https://developers.yubico.com/yubico-piv-tool/
 - https://developers.yubico.com/PIV/Guides/Certificate_authority.html
 - https://github.com/OpenSC/OpenSC/wiki/SmartCardHSM
+- https://www.owasp.org/index.php/Transport_Layer_Protection_Cheat_Sheet
 
 ------
 
