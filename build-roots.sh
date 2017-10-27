@@ -21,9 +21,6 @@ fcfg --input=cert.conf.in --output=$DIR/root-a.conf --config=site.yml -v=FileNam
 
 build_selfsigned root-a
 
-fcfg --input=sign.conf.in --output=$DIR/root-a-sign.conf --config=site.yml -v=FileName:root-a -v=Suffix:'ROOT A' \
-    -vPrivateKey:root-a --quiet
-
 echo "Building root certificate B"
 prepare_files $DIR/root-b
 
@@ -31,9 +28,6 @@ fcfg --input=cert.conf.in --output=$DIR/root-b.conf --config=site.yml -v=FileNam
     -vPrivateKey:root-b $ROOT_ARGS --quiet
 
 build_selfsigned root-b
-
-fcfg --input=sign.conf.in --output=$DIR/root-b-sign.conf --config=site.yml -v=FileName:root-b -v=Suffix:'ROOT B' \
-    -vPrivateKey:root-b --quiet
 
 echo "Cross signing CA roots"
 
