@@ -24,7 +24,7 @@ fi
 echo "Generating new intermediate cert: $NAME"
 
 echo "Configuring intermediate cert from ./int.conf.in"
-fcfg --input=cert.conf.in --output=$DIR/$FILE.conf --config=site.yml -v=FileName:$FILE \
+fcfg --input=cert.conf.in --output=$DIR/$FILE.conf --configs=site.yml -v=FileName:$FILE \
     -vPrivateKey:$FILE -vIsCA:true -vPathLen:0 -vUsages:'keyAgreement,digitalSignature,keyCertSign' -vPrompt:yes --quiet
 
 echo "Generating intermediate key"
