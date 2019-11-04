@@ -1,0 +1,8 @@
+# General CA configuration
+
+export COUNTRY=TestCountry
+export STATE=TestCity
+export ORG=TestOrg
+export ORG_UNIT=TestDept
+export DOMAIN=test.com
+export EMAIL=pki@test.com
