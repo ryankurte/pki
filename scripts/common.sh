@@ -15,8 +15,8 @@ function configure_file {
         sed \
         -e "s|COUNTRY|$COUNTRY|g" \
         -e "s|STATE|$STATE|g" \
-        -e "s|ORG|$ORG|g" \
         -e "s|ORG_UNIT|$ORG_UNIT|g" \
+        -e "s|ORG|$ORG|g" \
         -e "s|DOMAIN|$DOMAIN|g" \
         -e "s|EMAIL|$EMAIL|g" \
         -e "s|ROOT_NAME|$ROOT_NAME|g" \
