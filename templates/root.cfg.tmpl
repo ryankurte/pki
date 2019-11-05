@@ -76,10 +76,10 @@ keyUsage                    = critical,keyCertSign,cRLSign
 # Apply name constraints for what can be signed
 nameConstraints             = critical,@nc
 [ nc ]
-permitted;DNS.0=ROOT_NAME.DOMAIN
-permitted;DNS.1=.ROOT_NAME.DOMAIN
-permitted;URI.0=ROOT_NAME.DOMAIN
-permitted;URI.1=.ROOT_NAME.DOMAIN
+permitted;DNS.0=DOMAIN
+permitted;DNS.1=.DOMAIN
+permitted;URI.0=DOMAIN
+permitted;URI.1=.DOMAIN
 permitted;IP.0=0.0.0.0/255.255.255.255
 permitted;IP.1=::/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
 
