@@ -1,6 +1,6 @@
 # General CA configuration
 
-export COUNTRY=TestCountry
+export COUNTRY=NZ
 export STATE=TestCity
 export ORG=TestOrg
 export ORG_UNIT=TestDept

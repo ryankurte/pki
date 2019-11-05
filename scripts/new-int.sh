@@ -22,18 +22,19 @@ set -e
 
 # Generate new key
 echo "Generating key: $DIR/$INT_NAME.key"
-openssl genrsa -out $DIR/$INT_NAME.key 2048
-
-echo "Generating key: $DIR/$INT_NAME.conf"
+generate_key $DIR/$INT_NAME.key
 
 # Copy (and edit!) the intermediate certificate configuration template
+echo "Generating configuration: $DIR/$INT_NAME.conf"
 configure_file templates/int.cfg.tmpl $DIR/$INT_NAME.conf "$INT_NAME"
 	
 # Generate new CSR
 openssl req -new -config $DIR/$INT_NAME.conf -key $DIR/$INT_NAME.key -out $DIR/$INT_NAME.csr 
 
 # Create serial file
-echo "01" > $DIR/$INT_NAME.srl
+if [ ! -f "$DIR/$INT_NAME.srl" ]; then
+    echo "01" > $DIR/$INT_NAME.srl
+fi
 
 echo "Generated CSR: $DIR/$INT_NAME.csr, this must now be signed"
 

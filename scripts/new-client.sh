@@ -18,19 +18,18 @@ set -e
 # Load helpers
 . ./scripts/common.sh
 
+# Generate a new intermediate key
 echo "Generating key: $DIR/$CLIENT_NAME.key"
-openssl genrsa -out $DIR/$CLIENT_NAME.key 2048
-
-echo "Generating key: $DIR/$CLIENT_NAME.conf"
+generate_key $DIR/$CLIENT_NAME.key
 
 # Copy (and edit!) the intermediate certificate configuration template
+echo "Generating key: $DIR/$CLIENT_NAME.conf"
 configure_file templates/client.cfg.tmpl $DIR/$CLIENT_NAME.conf $CLIENT_NAME
 	
 # Generate new CSR
+echo "Generating CSR: $DIR/$CLIENT_NAME.csr"
 openssl req -new -config $DIR/$CLIENT_NAME.conf -key $DIR/$CLIENT_NAME.key -out $DIR/$CLIENT_NAME.csr 
 
-# Create serial file
-echo "01" > $DIR/$CLIENT_NAME.srl
-
+# All done!
 echo "Generated CSR: $DIR/$CLIENT_NAME.csr, this must now be signed"
 
