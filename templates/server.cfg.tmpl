@@ -1,0 +1,25 @@
+# Server certificate configuration
+
+[ req ]
+req_extensions      = v3_req
+distinguished_name  = req_distinguished_name
+prompt = no
+
+[ req_distinguished_name ]
+countryName                     = CN
+stateOrProvinceName             = STATE
+organizationName                = ORG
+organizationalUnitName          = ORG_UNIT
+commonName                      = COMMON_NAME
+emailAddress                    = EMAIL
+
+[ v3_req ]
+subjectAltName=email:copy
+subjectKeyIdentifier=hash
+
+basicConstraints = critical,CA:FALSE
+extendedKeyUsage=serverAuth
+keyUsage = critical, digitalSignature, keyEncipherment
+
+subjectAltName = DNS:localhost, IP:127.0.0.1
+

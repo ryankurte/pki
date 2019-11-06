@@ -1,0 +1,14 @@
+# General CA configuration
+
+export COUNTRY=NZ
+export STATE=TestCity
+export ORG=TestOrg
+export ORG_UNIT=TestDept
+export DOMAIN=test.com
+export EMAIL=pki@test.com
+
+# Currently only RSA is supported, key length limited to 2048 bit by yubikeys
+export KEY_TYPE=rsa
+export KEY_LEN=2048
+
+export EXPIRY_DAYS=9999

@@ -1,7 +1,5 @@
-*.conf
 *.key
-*.crt
-*.csr
-*.srl
-work/
-public
+*.old
+
+example-ca/
+test-ca/

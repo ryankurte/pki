@@ -1,0 +1,95 @@
+# Root certificate configuration
+
+[ ca ]
+default_ca = CA_default
+
+[ CA_default ]
+dir = DIR
+
+# Setup directory for new CA
+new_certs_dir    = $dir
+certificate      = $dir/ROOT_NAME.crt
+private_key      = $dir/ROOT_NAME.key
+database         = $dir/ROOT_NAME.db
+serial           = $dir/ROOT_NAME.srl
+
+crldir          = $dir/crl
+crlnumber       = $dir/crlnumber        # the current crl number
+crl             = $crldir/crl.pem       # The current CRL
+
+# Set expiry to... a long time
+default_md       = sha512
+default_days     = EXPIRY_DAYS
+default_crl_days = EXPIRY_DAYS
+unique_subject   = no
+
+policy           = policy_match
+copy_extensions  = none
+x509_extensions  = v3_ca
+req_extensions   = v3_req
+
+cert_opt         = ca_default
+name_opt         = multiline,-esc_msb,utf8
+
+email_in_dn             = no
+unique_subject          = no 
+
+[ req ]
+req_extensions      = v3_req
+distinguished_name  = req_distinguished_name
+
+copy_extensions     = none
+x509_extensions     = v3_ca
+
+prompt              = no
+
+# Policy defining requirements for sub certificates
+[ policy_match ]
+organizationName        = match
+organizationalUnitName  = supplied
+commonName              = supplied
+#emailAddress            = supplied
+
+# Root certificate configuration
+[ req_distinguished_name ]
+countryName                     = CN
+stateOrProvinceName             = STATE
+organizationName                = ORG
+organizationalUnitName          = ORG_UNIT
+commonName                      = COMMON_NAME
+#emailAddress                    = EMAIL
+
+[ v3_req ]
+subjectAltName=email:copy
+
+# CA Configuration
+[ v3_ca ]
+subjectKeyIdentifier        = hash
+authorityKeyIdentifier      = keyid:always,issuer:always
+basicConstraints            = critical,CA:true,pathlen:2
+
+crlDistributionPoints       = @crl_info
+
+# Limit usage to certificate and CRL signing
+keyUsage                    = critical,keyCertSign,cRLSign
+
+# Apply name constraints for what can be signed
+nameConstraints             = critical,@nc
+[ nc ]
+permitted;DNS.0=DOMAIN
+permitted;DNS.1=.DOMAIN
+permitted;URI.0=DOMAIN
+permitted;URI.1=.DOMAIN
+permitted;IP.0=0.0.0.0/255.255.255.255
+permitted;IP.1=::/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+
+# Include issuer information URL (where cert can be found)
+[ issuer_info ]
+caIssuers;URI.0         = https://DOMAIN/crl/ROOT_NAME.crt
+
+# Include CRL URL (where CRL could be in future located
+[ crl_info ]
+URI.0                   = https://DOMAIN/crl/ROOT_NAME/
+
+[ crl_ext ]
+authorityKeyIdentifier=keyid:always,issuer:always
