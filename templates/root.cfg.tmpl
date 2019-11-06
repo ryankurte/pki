@@ -19,8 +19,8 @@ crl             = $crldir/crl.pem       # The current CRL
 
 # Set expiry to... a long time
 default_md       = sha512
-default_days     = 9999
-default_crl_days = 9999
+default_days     = EXPIRY_DAYS
+default_crl_days = EXPIRY_DAYS
 unique_subject   = no
 
 policy           = policy_match
@@ -48,7 +48,7 @@ prompt              = no
 organizationName        = match
 organizationalUnitName  = supplied
 commonName              = supplied
-emailAddress            = supplied
+#emailAddress            = supplied
 
 # Root certificate configuration
 [ req_distinguished_name ]
@@ -57,7 +57,7 @@ stateOrProvinceName             = STATE
 organizationName                = ORG
 organizationalUnitName          = ORG_UNIT
 commonName                      = COMMON_NAME
-emailAddress                    = EMAIL
+#emailAddress                    = EMAIL
 
 [ v3_req ]
 subjectAltName=email:copy
