@@ -26,12 +26,14 @@ TODO
 
 
 ## Status
-Working on OSX, Linux
+Working on OSX, Linux, Windows seems [v cursed](https://github.com/ryankurte/pki/issues/9)
 
 
 ## Usage
 
-First, create your own PKI git repository using this as a template.
+First, create your own PKI git repository using this as a template, then use the following steps to create a Root / CA, Intermediate certificates, and Client or Server certificates.
+
+Note that when deploying yubikeys you may wish to configure management and PIV pins to ensure that certificates are not mistakenly overwritten, and are only used by authorized parties. We recommend you read [this](https://developers.yubico.com/yubico-piv-tool/YubiKey_PIV_introduction.html) getting started guide for PIV on yubikeys before getting underway.
 
 ### Creating a new Certificate Authority (Root Certificate)
 
@@ -59,7 +61,7 @@ Note that steps 4-6 can be elided if you need to do something else with your int
 
 1. Run `./scripts/new-client.sh CA_NAME CLIENT_NAME` or `./scripts/new-server.sh CA_NAME SERVER_NAME` to create a new client or server cerficiate respectively
     - Note that server names are checked when making tls connections, so the server name must match the domain name
-2. Run `./scripts/yk-sign-end.sh CA_NAME INT_NAME END_NAME` to sign the client or server CSR using the root yubikey
+2. Run `./scripts/yk-sign-end.sh CA_NAME END_NAME` to sign the client or server CSR using an intermediate yubikey
   - You will need to enter the device pin and press the button on the yubikey when the light flashes to authorize the signing
 3. Run `git add CA_NAME/END_NAME.crt` to add your new certificate to version control
 4. Do whatever you choose with the created certificate
@@ -80,6 +82,7 @@ Linux: install with `sudo apt install openssl opensc-pkcs11 libengine-pkcs11-ope
 
 ## Resources
 
+- https://developers.yubico.com/yubico-piv-tool/YubiKey_PIV_introduction.html
 - https://developers.yubico.com/PIV/Guides/Certificate_authority.html
 - https://github.com/OpenSC/OpenSC/wiki/SmartCardHSM
 - https://www.owasp.org/index.php/Transport_Layer_Protection_Cheat_Sheet
