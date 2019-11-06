@@ -18,6 +18,14 @@ export END_NAME=$3
 
 set -e
 
+
+# Load config
+. $DIR/config
+
+# Load helpers
+. ./scripts/common.sh
+
+
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     CONFIG="scripts/engine-nix.conf"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
@@ -30,7 +38,7 @@ set -e
 
 # Run sign command
 OPENSSL_CONF=$CONFIG openssl x509 -engine pkcs11 -CAkeyform engine -CAkey slot_0-id_2 \
-    -sha512 -CA $DIR/$INT_NAME.crt -req -in $DIR/$END_NAME.csr \
+    -sha512 -CA $DIR/$INT_NAME.crt -req -in $DIR/$END_NAME.csr -days=$EXPIRY_DAYS \
     -out $DIR/$END_NAME.crt
 
 echo "Signed end certificate: $DIR/$END_NAME.crt"

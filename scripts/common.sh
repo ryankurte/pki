@@ -2,12 +2,20 @@
 # Common functions
 
 function generate_key {
-    if [ ! -f "$1" ]; then
-        openssl genrsa -out $1 2048
-    else
+    if [ -f "$1" ]; then
         echo "WARNING using existing key $1"
         echo "To re-generate the key please remove this file"
+
+        return
     fi
+
+    if [ $KEY_TYPE == "rsa" ]; then
+        openssl genrsa -out $1 $KEY_LEN
+    else
+        echo "ERROR unsupported key type: $KEY_TYPE"
+        return
+    fi
+
 }
 
 function configure_file {
@@ -22,6 +30,7 @@ function configure_file {
         -e "s|ROOT_NAME|$ROOT_NAME|g" \
         -e "s|INT_NAME|$INT_NAME|g" \
         -e "s|COMMON_NAME|$3|g" \
+        -e "s|EXPIRY_DAYS|$EXPIRY_DAYS|g" \
         -e "s|DIR|$DIR|g" \
         $1 > $2
     else
