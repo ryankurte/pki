@@ -1,5 +1,8 @@
 *.key
 *.old
 
+*/client/
+*/server/
+
 example-ca/
 test-ca/
