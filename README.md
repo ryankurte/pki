@@ -17,6 +17,7 @@ This works using a trust chain, whereby devices can trust a root Certificate Aut
 
 
 ### Why would you need it?
+
 This is commonly used for HTTPS/TLS on the web, where certificate authorities are distributed as part of your operating system or browser, allowing transparent validation and secure connections through the web.
 Sometimes it is useful to have an internal certificate authority (or a few), for use between micro-services, or in manufacturing to ensure security with physical devices.
 
@@ -26,8 +27,21 @@ TODO
 
 
 ## Status
-Working on OSX, Linux, Windows seems [v cursed](https://github.com/ryankurte/pki/issues/9)
 
+Working on OSX, Linux, [Some features](https://github.com/ryankurte/pki/issues/9) supported on Windows (and PRs are welcome).
+
+## Dependencies
+
+- Git - to clone and manage the repository
+- OpenSSL - for key and certificate generation and signing
+- OpenSC - smartcard to pkcs11 adaptor
+- engine_pks11 - openssl pkcs11 engine
+- [Yubico Manager](https://developers.yubico.com/yubikey-manager/) for managing and interacting with keys
+
+
+OSX: install with `brew install openssl engine_pkcs11 opensc yubico-piv-tool`.
+Linux: install with `sudo apt install openssl opensc-pkcs11 libengine-pkcs11-openssl`
+Windows: install with `choco install openssl opensc`, compile [libp11](https://github.com/OpenSC/libp11/blob/master/INSTALL.md) or grab a pre-compiled (win10, x64) libp11.dll from [here](https://github.com/ryankurte/pki/issues/9#issuecomment-552264822), copy config from [scripts/engine-win.conf](scripts/engine-win.conf) to `C:\Program Files\OpenSSL-Win64\openssl.cfg` and update `opensc-pkcs11.dll` and `pkcs11.dll` locations to match installed.
 
 ## Usage
 
@@ -67,17 +81,10 @@ Note that steps 4-6 can be elided if you need to do something else with your int
 4. Do whatever you choose with the created certificate
 
 
+### Creating a new End (Client) Certificate (Windows)
 
-### Dependencies
-
-- Git
-- OpenSSL
-- OpenSC
-- [Yubico Manager](https://developers.yubico.com/yubikey-manager/)
-- engine_pks11.so
-
-OSX: install with `brew install openssl engine_pkcs11 opensc yubico-piv-tool`.
-Linux: install with `sudo apt install openssl opensc-pkcs11 libengine-pkcs11-openssl`
+1. Copy `./templates/client.cfg.tmpl` to `CA_NAME/CLIENT_NAME.cfg`
+2. Run `./scripts/new-client.cmd CA_NAME INT_NAME CLIENT_NAME` to generate and sign the new client certificate with the provided intermediate (on the yubikey)
 
 
 ## Resources
