@@ -49,6 +49,10 @@ First, create your own PKI git repository using this as a template, then use the
 
 Note that when deploying yubikeys you may wish to configure management and PIV pins to ensure that certificates are not mistakenly overwritten, and are only used by authorized parties. We recommend you read [this](https://developers.yubico.com/yubico-piv-tool/YubiKey_PIV_introduction.html) getting started guide for PIV on yubikeys before getting underway.
 
+### Limitiations
+
+Note that an issue with yubikeys / opensc / openssl precludes unattended use of certificates loaded in slot 9c, you can read more about it [here](https://stackoverflow.com/a/58810690/6074942) and use slot 9a if this function is required.
+
 ### Creating a new Certificate Authority (Root Certificate)
 
 1. Run `mkdir CA_NAME` to create a new directory for your CA

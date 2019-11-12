@@ -12,3 +12,8 @@ export KEY_TYPE=rsa
 export KEY_LEN=2048
 
 export EXPIRY_DAYS=9999
+
+# Yubikey slot 9c / 02
+# Note that a bug in openssl requires the use of slot 9a / 01 for 
+export SLOT=slot_0-id_2
+
