@@ -36,7 +36,7 @@ echo "Signing intermediate certificate: $DIR/$INT_NAME.crt with $DIR/$ROOT_NAME.
 
 # Run sign command
 OPENSSL_CONF=$CONFIG openssl x509 -engine pkcs11 -CAkeyform engine -CAkey slot_0-id_2 \
-    -sha512 -CA $DIR/$ROOT_NAME.crt -req -extensions v3_ca -days=$EXPIRY_DAYS \
+    -sha512 -CA $DIR/$ROOT_NAME.crt -req -extensions v3_ca -extfile $DIR/$INT_NAME.conf -days=$EXPIRY_DAYS \
     -in $DIR/$INT_NAME.csr -out $DIR/$INT_NAME.crt
 
 echo "Signed $DIR/$INT_NAME.crt"
