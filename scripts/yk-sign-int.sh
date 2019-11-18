@@ -40,3 +40,7 @@ OPENSSL_CONF=$CONFIG openssl x509 -engine pkcs11 -CAkeyform engine -CAkey slot_0
     -in $DIR/$INT_NAME.csr -out $DIR/$INT_NAME.crt
 
 echo "Signed $DIR/$INT_NAME.crt"
+
+# Verify generated certificate
+openssl verify -CAfile $DIR/$ROOT_NAME.crt $DIR/$INT_NAME.crt
+

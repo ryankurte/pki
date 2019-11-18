@@ -52,7 +52,7 @@ commonName              = supplied
 
 # Root certificate configuration
 [ req_distinguished_name ]
-countryName                     = CN
+countryName                     = COUNTRY
 stateOrProvinceName             = STATE
 organizationName                = ORG
 organizationalUnitName          = ORG_UNIT
@@ -76,12 +76,15 @@ keyUsage                    = critical,keyCertSign,cRLSign
 # Apply name constraints for what can be signed
 nameConstraints             = critical,@nc
 [ nc ]
+# Allowed DNS names
 permitted;DNS.0=DOMAIN
 permitted;DNS.1=.DOMAIN
+# Allowed URIs
 permitted;URI.0=DOMAIN
 permitted;URI.1=.DOMAIN
-permitted;IP.0=0.0.0.0/255.255.255.255
-permitted;IP.1=::/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+# Enable this to restrict IP ranges for signing
+#permitted;IP.0=0.0.0.0/255.255.255.255
+#permitted;IP.1=::/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
 
 # Include issuer information URL (where cert can be found)
 [ issuer_info ]

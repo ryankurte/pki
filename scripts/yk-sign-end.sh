@@ -43,3 +43,6 @@ OPENSSL_CONF=$CONFIG openssl x509 -engine pkcs11 -CAkeyform engine -CAkey slot_0
     -in $DIR/$TYPE/$END_NAME.csr -days=$EXPIRY_DAYS -out $DIR/$TYPE/$END_NAME.crt
 
 echo "Signed end certificate: $DIR/$TYPE/$END_NAME.crt"
+
+echo "Appended DIR/$INT_NAME.crt to $DIR/$TYPE/$END_NAME.crt"
+cat $DIR/$INT_NAME.crt >> $DIR/$TYPE/$END_NAME.crt

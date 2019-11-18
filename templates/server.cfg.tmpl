@@ -7,7 +7,7 @@ distinguished_name  = req_distinguished_name
 prompt = no
 
 [ req_distinguished_name ]
-countryName                     = CN
+countryName                     = COUNTRY
 stateOrProvinceName             = STATE
 organizationName                = ORG
 organizationalUnitName          = ORG_UNIT
@@ -22,5 +22,5 @@ basicConstraints = critical, CA:FALSE, pathlen:0
 extendedKeyUsage = serverAuth, clientAuth
 keyUsage = critical, digitalSignature, keyEncipherment
 
-subjectAltName = DNS:localhost, IP:127.0.0.1
+subjectAltName = DNS:COMMON_NAME
 

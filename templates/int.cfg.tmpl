@@ -66,9 +66,12 @@ keyUsage         = critical,keyAgreement,digitalSignature,keyCertSign
 nameConstraints  = critical,@nc
 
 [ nc ]
+# Allowed DNS names
 permitted;DNS.0=DOMAIN
 permitted;DNS.1=.DOMAIN
+# Allowed URIs
 permitted;URI.0=DOMAIN
 permitted;URI.1=.DOMAIN
-permitted;IP.0=0.0.0.0/255.255.255.255
-permitted;IP.1=::/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+# Enable this to restrict IP ranges for signing
+#permitted;IP.0=0.0.0.0/255.255.255.255
+#permitted;IP.1=::/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
