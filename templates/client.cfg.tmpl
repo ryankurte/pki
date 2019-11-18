@@ -3,9 +3,9 @@
 [ req ]
 req_extensions      = v3_req
 distinguished_name  = req_distinguished_name
+
 prompt = no
 
-[ req_distinguished_name ]
 [ req_distinguished_name ]
 countryName                     = CN
 stateOrProvinceName             = STATE
@@ -18,7 +18,7 @@ emailAddress                    = EMAIL
 subjectAltName=email:copy
 subjectKeyIdentifier=hash
 
-basicConstraints = critical,CA:FALSE
+basicConstraints = critical,CA:FALSE,pathlen:0
 extendedKeyUsage=clientAuth
 keyUsage = critical, digitalSignature, keyEncipherment, keyAgreement
 
