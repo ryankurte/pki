@@ -1,9 +1,9 @@
 # Intermediate certificate configuration
 
 [ ca ]
-default_ca = int_ca
+default_ca = req
 
-[ int_ca ]
+[ req ]
 dir = DIR
 
 new_certs_dir       = $dir
@@ -21,18 +21,18 @@ unique_subject   = no
 
 policy              = policy_match
 
-copy_extensions     = none
-x509_extensions     = v3_ca
-req_extensions      = v3_req
-
 cert_opt         = ca_default
 name_opt         = multiline,-esc_msb,utf8
 
 email_in_dn             = no
 unique_subject          = no 
 
-[ req ]
 distinguished_name  = req_distinguished_name
+
+copy_extensions     = copy
+x509_extensions     = v3_ca
+req_extensions      = v3_req
+
 prompt              = no
 
 # Policy defining requirements for sub certificates
@@ -53,11 +53,15 @@ emailAddress                    = EMAIL
 [ v3_req ]
 subjectAltName         = email:move
 
+basicConstraints = critical,CA:true,pathlen:1
+keyUsage         = critical,keyAgreement,digitalSignature,keyCertSign
+nameConstraints  = critical,@nc
+
 [ v3_ca ]
 subjectKeyIdentifier   = hash
 authorityKeyIdentifier = keyid:always,issuer:always
 
-basicConstraints = critical,CA:true,pathlen:0
+basicConstraints = critical,CA:true,pathlen:1
 keyUsage         = critical,keyAgreement,digitalSignature,keyCertSign
 nameConstraints  = critical,@nc
 
