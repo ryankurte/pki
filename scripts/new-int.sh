@@ -29,7 +29,7 @@ echo "Generating configuration: $DIR/$INT_NAME.conf"
 configure_file templates/int.cfg.tmpl $DIR/$INT_NAME.conf "$HUMAN_NAME"
 	
 # Generate new CSR
-openssl req -new -config $DIR/$INT_NAME.conf -key $DIR/$INT_NAME.key -out $DIR/$INT_NAME.csr 
+openssl req -new -config $DIR/$INT_NAME.conf -extensions v3_ca -key $DIR/$INT_NAME.key -out $DIR/$INT_NAME.csr 
 
 # Create serial file
 if [ ! -f "$DIR/$INT_NAME.srl" ]; then

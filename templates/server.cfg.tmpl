@@ -3,6 +3,7 @@
 [ req ]
 req_extensions      = v3_req
 distinguished_name  = req_distinguished_name
+
 prompt = no
 
 [ req_distinguished_name ]
@@ -17,8 +18,8 @@ emailAddress                    = EMAIL
 subjectAltName=email:copy
 subjectKeyIdentifier=hash
 
-basicConstraints = critical,CA:FALSE
-extendedKeyUsage=serverAuth
+basicConstraints = critical, CA:FALSE, pathlen:0
+extendedKeyUsage = serverAuth, clientAuth
 keyUsage = critical, digitalSignature, keyEncipherment
 
 subjectAltName = DNS:localhost, IP:127.0.0.1
