@@ -15,7 +15,8 @@ fi
 # Setup variables
 export DIR=$1
 export INT_NAME=$2
-export END_NAME=$3
+export TYPE=$3
+export END_NAME=$4
 
 set -e
 
